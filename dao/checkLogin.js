@@ -5,23 +5,25 @@ var mysql = require('mysql');
 
 async function checkLogin(userData)
 {
-  let conn = getConnection();
-  await runLoginQuery(conn , userData);
-  console.log(resultData);
+  let conn = await getConnection();
+  let data = await runLoginQuery(conn , userData);
+  console.log(data);
   return resultData;
-
 }
 
 // function to get connection
 function getConnection()
 {
+
+  return new Promise((resolve,reject)=>{
     let conn = mysql.createConnection({
       host: "localhost",
       user:"root",
       password:"123",
       database:"covid"
-    }); //{conn}
-    return conn; // returning the connection object
+    });//{conn}
+    resolve(conn);
+  });
 }
 
 // to run the query
@@ -46,8 +48,8 @@ function runLoginQuery(conn , userData)
         let queryResult  = JSON.stringify(result[0]); // data after query the database
         let userData = JSON.parse(queryResult.split(' ')[0]); // actual user data after parsing the queryResult
 
-        resultData = userData; // setting the result data
-        resolve(); // resolving the promise
+        //resultData = userData; // setting the result data
+        resolve(userData); // resolving the promise
 
       }); //{query}
     }); // {connect}
