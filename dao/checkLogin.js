@@ -7,35 +7,39 @@ async function checkLogin(userData)
 {
   let conn = await getConnection();
   let data = await runLoginQuery(conn , userData);
-  console.log(data);
-  return resultData;
+  //  console.log(data);
+  return data;
 }
 
 // function to get connection
 function getConnection()
 {
-
   return new Promise((resolve,reject)=>{
     let conn = mysql.createConnection({
       host: "localhost",
       user:"root",
       password:"123",
       database:"covid"
+
     });//{conn}
-    resolve(conn);
-  });
+
+      conn.connect((err)=>{
+        if(err){
+          reject(); // reject the promise
+          throw err ;
+        } // throw the error
+        else{
+          resolve(conn);
+        }
+
+      }); //{connect}
+  });//{promise}
 }
 
 // to run the query
 function runLoginQuery(conn , userData)
 {
   return new Promise((resolve,reject)=>{ // gives a promise
-    conn.connect((err)=>{
-      if(err)
-      {
-        reject(); // reject the promise
-        throw err ;
-      } // throw the error
 
       let sql = "Select * from users where email = ? and password = ?";  // query to check login
       conn.query(sql, [userData.email ,  userData.password] ,(err,result)=>{
@@ -52,7 +56,7 @@ function runLoginQuery(conn , userData)
         resolve(userData); // resolving the promise
 
       }); //{query}
-    }); // {connect}
+
   }); //{promise}
 } // {runLoginQuery}
 

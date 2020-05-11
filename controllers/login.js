@@ -37,13 +37,11 @@ module.exports = (app)=>{
   });// {app.post}
 
   //handling post request for login
-  app.post('/login', urlEncodedParser, (req,res)=>{
+  app.post('/login', urlEncodedParser, async (req,res)=>{
 
     let loginUser = JSON.parse(JSON.stringify(req.body)); // details given by the user
-    let user = login.checkLogin(loginUser);
-
+    let user = await login.checkLogin(loginUser)//.then((value)=>{user = value});
     console.log(user);
-
     // check user details
     if(user.email === loginUser.email & user.password===loginUser.password){
 
