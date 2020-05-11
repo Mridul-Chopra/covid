@@ -1,5 +1,8 @@
 const bodyParser = require('body-parser');
+const chat = require('../dao/chat');
+const login = require('../dao/checkLogin');
 const jwt = require('jsonwebtoken');
+const jwtDecode = require('jwt-decode');
 const urlEncodedParser = bodyParser.urlencoded({extended:false});
 
 module.exports = (app)=>{
@@ -22,6 +25,12 @@ module.exports = (app)=>{
       } // {if}
        else {
          res.json('You are logged in');
+
+         let jwtPayload = jwtDecode(req.token); // decoding the payload from jwt
+         let email = jwtPayload.user; // getting user's email from the payload
+
+         chat.saveChat(message,email); // saving the chat to mongo db
+
        } // {else}
     }); // {verify}
 
@@ -29,14 +38,19 @@ module.exports = (app)=>{
 
   //handling post request for login
   app.post('/login', urlEncodedParser, (req,res)=>{
-    let user = {username:'Mridul', password:'123'};  // dummy user
+
     let loginUser = JSON.parse(JSON.stringify(req.body)); // details given by the user
+    let user = login.checkLogin(loginUser);
+
+    console.log(user);
 
     // check user details
-    if(user.username === loginUser.username & user.password===loginUser.password){
+    if(user.email === loginUser.email & user.password===loginUser.password){
+
+      let email = loginUser.email;
       console.log('Login success for user : ' + user.username);
       // signing the jwt token to send to client
-      jwt.sign({loginUser},SECRET_KEY,(err,token)=>{
+      jwt.sign({email:email},SECRET_KEY,(err,token)=>{
         res.json({
           token
         }); // {res.json}
