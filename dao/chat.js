@@ -1,20 +1,10 @@
-const mongo = require('mongoose');
+const mongoUtils = require('../utils/mongo-models');
+
 
 function saveChat(message , name , email){
-
-  const url = 'mongodb://localhost:27017/Covid'; // url to connect to mongo db
-  mongo.connect(url); // connecting to mongo
-
-// defining the schema for documents
-  const chatSchema = new mongo.Schema({
-    chat : String ,
-    user : String,
-    email:String
-  });
-
-  var chat = mongo.model('Chat',chatSchema); // making model out of required schema
-
-  let chatToSave = new chat({chat:message, user:name , email:'email'}); // data to be saved
+  
+  let chat = mongoUtils.getChat();
+  let chatToSave = new chat({chat:message, user:name , email:email, time:Date.now()}); // data to be saved
 
   // saving the data in mongo db
   chatToSave.save((err,data)=>{

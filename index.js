@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const home = require('./controllers/home');
 const login = require('./controllers/login');
 const signup = require('./controllers/signup');
+const chat = require('./controllers/viewChat')
 
 const app = express(); // start using express;
 dotenv.config();
@@ -16,6 +17,7 @@ dotenv.config();
 home(app);
 login(app);
 signup(app);
+chat(app);
 
 /*
   Setting our app server

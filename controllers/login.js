@@ -27,9 +27,9 @@ module.exports = (app)=>{
          res.json('You are logged in');
 
          let jwtPayload = jwtDecode(req.token); // decoding the payload from jwt
-         let email = jwtPayload.user; // getting user's email from the payload
-
-         chat.saveChat(message,email); // saving the chat to mongo db
+         let email = jwtPayload.email; // getting user's email from the payload
+         let fullName = jwtPayload.fullName; // getting full name from jwt payload
+         chat.saveChat(message,email,fullName); // saving the chat to mongo db
 
        } // {else}
     }); // {verify}
@@ -40,15 +40,16 @@ module.exports = (app)=>{
   app.post('/login', urlEncodedParser, async (req,res)=>{
 
     let loginUser = JSON.parse(JSON.stringify(req.body)); // details given by the user
-    let user = await login.checkLogin(loginUser)//.then((value)=>{user = value});
-    console.log(user);
+    let user = await login.checkLogin(loginUser);
+
     // check user details
     if(user.email === loginUser.email & user.password===loginUser.password){
 
       let email = loginUser.email;
-      console.log('Login success for user : ' + user.username);
+      let fullName = user.full_name;
+      console.log('Login success for user : ' + user.email);
       // signing the jwt token to send to client
-      jwt.sign({email:email},SECRET_KEY,(err,token)=>{
+      jwt.sign({email:email,fullName:fullName},SECRET_KEY,(err,token)=>{
         res.json({
           token
         }); // {res.json}

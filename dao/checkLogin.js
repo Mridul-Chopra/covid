@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 
- var resultData ;
+ var resultData ; // stores the resultant data after the login query
 
 
 async function checkLogin(userData)
@@ -50,10 +50,17 @@ function runLoginQuery(conn , userData)
         } // throw the error
 
         let queryResult  = JSON.stringify(result[0]); // data after query the database
-        let userData = JSON.parse(queryResult.split(' ')[0]); // actual user data after parsing the queryResult
 
-        //resultData = userData; // setting the result data
-        resolve(userData); // resolving the promise
+
+        if(typeof queryResult === 'undefined'){
+          // if no user found
+          resolve('Incorrect Details'); // resolve as incorrect details
+        }
+        else{
+          let userData = JSON.parse(queryResult.split(' ')[0]); // actual user data after parsing the queryResult
+          //resultData = userData; // setting the result data
+          resolve(userData); // resolving the promise
+        }
 
       }); //{query}
 
